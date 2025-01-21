@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_01_21_172807) do
+ActiveRecord::Schema[8.0].define(version: 2025_01_21_173544) do
   create_table "cookbooks", force: :cascade do |t|
     t.string "cookbook_name"
     t.integer "user_id", null: false
@@ -19,11 +19,41 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_21_172807) do
     t.index ["user_id"], name: "index_cookbooks_on_user_id"
   end
 
+  create_table "ingredients", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "recipe_instructions", force: :cascade do |t|
+    t.integer "instruction_step"
+    t.string "instruction"
+    t.integer "recipe_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["recipe_id"], name: "index_recipe_instructions_on_recipe_id"
+  end
+
+  create_table "recipes", force: :cascade do |t|
+    t.string "name"
+    t.string "image"
+    t.integer "serving_size"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "sessions", force: :cascade do |t|
     t.integer "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_sessions_on_user_id"
+  end
+
+  create_table "tags", force: :cascade do |t|
+    t.string "tag_name"
+    t.boolean "cuisine"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "users", force: :cascade do |t|
@@ -38,5 +68,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_21_172807) do
   end
 
   add_foreign_key "cookbooks", "users"
+  add_foreign_key "recipe_instructions", "recipes"
   add_foreign_key "sessions", "users"
 end
