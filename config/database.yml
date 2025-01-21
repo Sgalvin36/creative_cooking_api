@@ -27,16 +27,32 @@ test:
 production:
   primary:
     <<: *default
-    database: storage/production.sqlite3
+    database: your_app_production
+    username: <%= ENV['DATABASE_USERNAME'] %>
+    password: <%= ENV['DATABASE_PASSWORD'] %>
+    host: <%= ENV['DATABASE_HOST'] || 'localhost' %>
+    port: <%= ENV['DATABASE_PORT'] || 5432 %>
   cache:
     <<: *default
-    database: storage/production_cache.sqlite3
+    database: your_app_production_cache
+    username: <%= ENV['DATABASE_USERNAME'] %>
+    password: <%= ENV['DATABASE_PASSWORD'] %>
+    host: <%= ENV['DATABASE_HOST'] || 'localhost' %>
+    port: <%= ENV['DATABASE_PORT'] || 5432 %>
     migrations_paths: db/cache_migrate
   queue:
     <<: *default
-    database: storage/production_queue.sqlite3
+    database: your_app_production_queue
+    username: <%= ENV['DATABASE_USERNAME'] %>
+    password: <%= ENV['DATABASE_PASSWORD'] %>
+    host: <%= ENV['DATABASE_HOST'] || 'localhost' %>
+    port: <%= ENV['DATABASE_PORT'] || 5432 %>
     migrations_paths: db/queue_migrate
   cable:
     <<: *default
-    database: storage/production_cable.sqlite3
+    database: your_app_production_cable
+    username: <%= ENV['DATABASE_USERNAME'] %>
+    password: <%= ENV['DATABASE_PASSWORD'] %>
+    host: <%= ENV['DATABASE_HOST'] || 'localhost' %>
+    port: <%= ENV['DATABASE_PORT'] || 5432 %>
     migrations_paths: db/cable_migrate

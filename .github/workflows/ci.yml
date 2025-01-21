@@ -39,7 +39,20 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
-
+    services:
+      postgres:
+        image: postgres:13
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: your_app_test
     # services:
     #  redis:
     #    image: redis
@@ -58,6 +71,15 @@ jobs:
         with:
           ruby-version: .ruby-version
           bundler-cache: true
+      - name: Set up database.yml
+        run: |
+        cp config/database.yml.ci config/database.yml
+
+      - name: Install dependencies
+        run: bundle install --jobs 4 --retry 3
+
+      - name: Prepare database
+        run: bin/rails db:create db:schema:load
 
       - name: Run tests
         env:

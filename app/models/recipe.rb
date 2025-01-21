@@ -10,5 +10,4 @@ class Recipe < ApplicationRecord
     validates :name, presence: true
     validates :image, presence: true
     validates :serving_size, presence: true
-    
 end

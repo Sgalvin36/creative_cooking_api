@@ -4,7 +4,7 @@ source "https://rubygems.org"
 gem "rails", "~> 8.0.1"
 # Use sqlite3 as the database for Active Record
 gem "sqlite3", ">= 2.1"
-gem 'pg', '~> 1.5'
+gem "pg", "~> 1.5"
 # Use the Puma web server [https://github.com/puma/puma]
 gem "puma", ">= 5.0"
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
@@ -36,7 +36,7 @@ gem "thruster", require: false
 # Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin Ajax possible
 # gem "rack-cors"
 
-gem 'graphql'
+gem "graphql"
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
@@ -44,6 +44,7 @@ group :development, :test do
   gem "pry"
   gem "rspec-rails"
   gem "shoulda-matchers"
+  gem "rubocop", require: false
   # Static analysis for security vulnerabilities [https://brakemanscanner.org/]
   gem "brakeman", require: false
 
@@ -54,4 +55,3 @@ end
 group :test do
   gem "simplecov"
 end
-
