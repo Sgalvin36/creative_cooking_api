@@ -8,6 +8,7 @@ RSpec.describe Recipe, type: :model do
         it { should have_many(:tags).through(:recipe_tags)}
         it { should have_many(:recipe_ingredients)}
         it { should have_many(:ingredients).through(:recipe_ingredients)}
+        it { should have_many(:recipe_instructions)}
     end
 
     describe "validations" do
