@@ -10,7 +10,26 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_01_21_173544) do
+ActiveRecord::Schema[8.0].define(version: 2025_01_21_174615) do
+  create_table "cookbook_recipes", force: :cascade do |t|
+    t.boolean "tried_it"
+    t.integer "cookbook_id", null: false
+    t.integer "recipe_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["cookbook_id"], name: "index_cookbook_recipes_on_cookbook_id"
+    t.index ["recipe_id"], name: "index_cookbook_recipes_on_recipe_id"
+  end
+
+  create_table "cookbook_tags", force: :cascade do |t|
+    t.integer "cookbook_id", null: false
+    t.integer "tag_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["cookbook_id"], name: "index_cookbook_tags_on_cookbook_id"
+    t.index ["tag_id"], name: "index_cookbook_tags_on_tag_id"
+  end
+
   create_table "cookbooks", force: :cascade do |t|
     t.string "cookbook_name"
     t.integer "user_id", null: false
@@ -19,10 +38,42 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_21_173544) do
     t.index ["user_id"], name: "index_cookbooks_on_user_id"
   end
 
+  create_table "ingredient_modifications", force: :cascade do |t|
+    t.float "modified_quantity"
+    t.integer "recipe_ingredient_id", null: false
+    t.integer "ingredient_id", null: false
+    t.integer "measurement_id", null: false
+    t.integer "user_recipe_modification_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["ingredient_id"], name: "index_ingredient_modifications_on_ingredient_id"
+    t.index ["measurement_id"], name: "index_ingredient_modifications_on_measurement_id"
+    t.index ["recipe_ingredient_id"], name: "index_ingredient_modifications_on_recipe_ingredient_id"
+    t.index ["user_recipe_modification_id"], name: "index_ingredient_modifications_on_user_recipe_modification_id"
+  end
+
   create_table "ingredients", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "measurements", force: :cascade do |t|
+    t.string "unit"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "recipe_ingredients", force: :cascade do |t|
+    t.float "quantity"
+    t.integer "ingredient_id", null: false
+    t.integer "measurement_id", null: false
+    t.integer "recipe_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["ingredient_id"], name: "index_recipe_ingredients_on_ingredient_id"
+    t.index ["measurement_id"], name: "index_recipe_ingredients_on_measurement_id"
+    t.index ["recipe_id"], name: "index_recipe_ingredients_on_recipe_id"
   end
 
   create_table "recipe_instructions", force: :cascade do |t|
@@ -32,6 +83,15 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_21_173544) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["recipe_id"], name: "index_recipe_instructions_on_recipe_id"
+  end
+
+  create_table "recipe_tags", force: :cascade do |t|
+    t.integer "recipe_id", null: false
+    t.integer "tag_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["recipe_id"], name: "index_recipe_tags_on_recipe_id"
+    t.index ["tag_id"], name: "index_recipe_tags_on_tag_id"
   end
 
   create_table "recipes", force: :cascade do |t|
@@ -56,6 +116,15 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_21_173544) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "user_recipe_modifications", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.integer "recipe_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["recipe_id"], name: "index_user_recipe_modifications_on_recipe_id"
+    t.index ["user_id"], name: "index_user_recipe_modifications_on_user_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "first_name"
     t.string "last_name"
@@ -67,7 +136,22 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_21_173544) do
     t.datetime "updated_at", null: false
   end
 
+  add_foreign_key "cookbook_recipes", "cookbooks"
+  add_foreign_key "cookbook_recipes", "recipes"
+  add_foreign_key "cookbook_tags", "cookbooks"
+  add_foreign_key "cookbook_tags", "tags"
   add_foreign_key "cookbooks", "users"
+  add_foreign_key "ingredient_modifications", "ingredients"
+  add_foreign_key "ingredient_modifications", "measurements"
+  add_foreign_key "ingredient_modifications", "recipe_ingredients"
+  add_foreign_key "ingredient_modifications", "user_recipe_modifications"
+  add_foreign_key "recipe_ingredients", "ingredients"
+  add_foreign_key "recipe_ingredients", "measurements"
+  add_foreign_key "recipe_ingredients", "recipes"
   add_foreign_key "recipe_instructions", "recipes"
+  add_foreign_key "recipe_tags", "recipes"
+  add_foreign_key "recipe_tags", "tags"
   add_foreign_key "sessions", "users"
+  add_foreign_key "user_recipe_modifications", "recipes"
+  add_foreign_key "user_recipe_modifications", "users"
 end
