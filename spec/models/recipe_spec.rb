@@ -4,6 +4,10 @@ RSpec.describe Recipe, type: :model do
     describe "associations" do
         it { should have_many(:cookbook_recipes)}
         it { should have_many(:cookbooks).through(:cookbook_recipes)}
+        it { should have_many(:recipe_tags)}
+        it { should have_many(:tags).through(:recipe_tags)}
+        it { should have_many(:recipe_ingredients)}
+        it { should have_many(:ingredients).through(:recipe_ingredients)}
     end
 
     describe "validations" do
