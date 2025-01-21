@@ -73,7 +73,7 @@ jobs:
           bundler-cache: true
       - name: Set up database.yml
         run: |
-        cp config/database.yml.ci config/database.yml
+          cp config/database.yml.ci config/database.yml
 
       - name: Install dependencies
         run: bundle install --jobs 4 --retry 3
