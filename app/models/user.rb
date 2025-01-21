@@ -1,12 +1,14 @@
 class User < ApplicationRecord
     # rolify strict: true
 
-    has_many :cookbooks, dependent: :destroy    
+    has_many :cookbooks, dependent: :destroy
+    has_many :user_recipe_modifications    
     
     validates :first_name, presence: true
     validates :last_name, presence: true
     validates :user_name, presence: true, uniqueness: true
     validates :password, presence: { require: true }
+    validates :role, presence: true
     has_secure_password
 
     # after_create :assign_default_role
