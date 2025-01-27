@@ -12,6 +12,11 @@ RSpec.describe User, type: :model do
         it { should validate_uniqueness_of(:user_name) }
         it { should validate_presence_of(:role) }
         it { should validate_presence_of(:password) }
+        it { should allow_value('ABCabc123321!').for(:password) }
+        it { should_not allow_value('ABC').for(:password) }
+        it { should_not allow_value('1234567891011').for(:password) }
+        it { should_not allow_value('abcdefGHIJKL').for(:password) }
+        it { should_not allow_value('123ABCabc123').for(:password) }
         it { should have_secure_password }
     end
 end

@@ -1,5 +1,12 @@
 class User < ApplicationRecord
-    # rolify strict: true
+  PASSWORD_REGEXP = /\A
+  (?=.{12,})
+  (?=.*\d)
+  (?=.*[a-z])
+  (?=.*[A-Z])
+  (?=.*[[:^alnum:]])
+  /x
+# rolify strict: true
 
     has_many :cookbooks, dependent: :destroy
     has_many :user_recipe_modifications
@@ -7,7 +14,7 @@ class User < ApplicationRecord
     validates :first_name, presence: true
     validates :last_name, presence: true
     validates :user_name, presence: true, uniqueness: true
-    validates :password, presence: { require: true }
+    validates :password, format: { with: PASSWORD_REGEXP, message: 'condition failed' }
     validates :role, presence: true
     has_secure_password
 
