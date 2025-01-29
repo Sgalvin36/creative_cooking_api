@@ -7,8 +7,9 @@ class Role < ApplicationRecord
   
 
   validates :resource_type,
-            :inclusion => { :in => Rolify.resource_types },
+            :inclusion => { :in => Rolify.resource_types + ["Cookbook"]},
             :allow_nil => true
 
+  validates :name, presence: true
   scopify
 end

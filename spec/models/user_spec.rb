@@ -4,7 +4,7 @@ RSpec.describe User, type: :model do
     describe "associations" do
         it { should have_many(:cookbooks) }
         it { should have_many(:user_recipe_modifications) }
-        it { should have_and_belong_to_many(:roles)}
+        it { should have_and_belong_to_many(:roles).join_table(:users_roles) }
     end
 
     describe "validations" do

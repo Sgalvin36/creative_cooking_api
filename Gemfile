@@ -47,6 +47,8 @@ group :development, :test do
   gem "pry"
   gem "rspec-rails"
   gem "shoulda-matchers"
+  gem 'factory_bot_rails'
+  gem 'faker'
   gem "rubocop", require: false
   # Static analysis for security vulnerabilities [https://brakemanscanner.org/]
   gem "brakeman", require: false
