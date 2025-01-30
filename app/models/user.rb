@@ -1,13 +1,12 @@
 class User < ApplicationRecord
-  rolify
-  PASSWORD_REGEXP = /\A
-  (?=.{12,})
-  (?=.*\d)
-  (?=.*[a-z])
-  (?=.*[A-Z])
-  (?=.*[[:^alnum:]])
-  /x
-# rolify strict: true
+    rolify
+    PASSWORD_REGEXP = /\A
+    (?=.{12,})
+    (?=.*\d)
+    (?=.*[a-z])
+    (?=.*[A-Z])
+    (?=.*[[:^alnum:]])
+    /x
 
     has_many :cookbooks, dependent: :destroy
     has_many :user_recipe_modifications
@@ -19,22 +18,26 @@ class User < ApplicationRecord
     validates :password, format: { with: PASSWORD_REGEXP, message: 'condition failed' }
     has_secure_password
 
-  after_create :assign_default_role
+    after_create :assign_default_role
 
-  def assign_default_role
-      set_role(:user) if roles.blank?
-  end
+    def assign_default_role
+        set_role(:user) if roles.blank?
+    end
 
-  def is_admin?
-      has_role?(:admin)
-  end
+    def admin?
+        roles.exists?(name: 'admin')
+    end
 
-  def is_user?
-      has_role?(:user)
-  end
+    def user?
+        roles.exists?(name: 'user')
+    end
 
-  def set_role(role_name)
-      self.roles.destroy_all
-      self.add_role(role_name)
-  end
+    def editor?
+        roles.exists?(name: 'editor')
+    end
+
+    def set_role(role_name)
+        self.roles.destroy_all
+        self.add_role(role_name)
+    end
 end

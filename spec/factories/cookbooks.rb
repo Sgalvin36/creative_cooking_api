@@ -1,6 +1,6 @@
 FactoryBot.define do
     factory :cookbook do
-        cookbook_name { "My Awesome Cookbook" }
+        cookbook_name { Faker::Books::CultureSeries.book }
         association :user
     end
 end
