@@ -8,8 +8,8 @@ RSpec.describe CookbookPolicy, type: :policy do
   let(:regular_user) { User.create!(first_name: 'Regular', last_name: 'User', user_name: 'regular_user', password: 'Password01234!') }
 
   before do
-    admin_user.roles << admin_role # Assign admin role to admin_user
-    regular_user.roles << user_role # Assign user role to regular_user
+    admin_user.roles << admin_role 
+    regular_user.roles << user_role 
   end
 
   let(:cookbook) { Cookbook.create!(cookbook_name: "Testy Test", user: regular_user) }

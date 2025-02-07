@@ -3,8 +3,4 @@ class RecipeBuilderPolicy < ApplicationPolicy
         user.present?
     end
 
-    def update?
-        user.admin?
-    end
-
 end
