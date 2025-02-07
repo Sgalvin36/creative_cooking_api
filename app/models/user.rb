@@ -21,7 +21,8 @@ class User < ApplicationRecord
     after_create :assign_default_role
 
     def assign_default_role
-        set_role(:user) if roles.blank?
+        user_role = Role.find_or_create_by(name: "user")
+        roles << user_role unless roles.include?(user_role)
     end
 
     def admin?

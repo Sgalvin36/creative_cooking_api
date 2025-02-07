@@ -1,8 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe CookbookPolicy, type: :policy do
-  let(:admin_role) { Role.create!(name: 'admin') }
-  let(:user_role) { Role.create!(name: 'user') }
+  let(:admin_role) { Role.find(name: 'admin') }
+  let(:user_role) { Role.find(name: 'user') }
 
   let(:admin_user) { User.create!(first_name: 'Admin', last_name: 'User', user_name: 'admin_user', password: 'Password01234!') }
   let(:regular_user) { User.create!(first_name: 'Regular', last_name: 'User', user_name: 'regular_user', password: 'Password01234!') }
