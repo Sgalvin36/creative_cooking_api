@@ -4,9 +4,9 @@ module Types
         field :name, String, null:false
         field :image, String, null:false
         field :serving_size, Integer, null:false
-        field :cookbooks, [Type::CookbookType], null:true
-        field :tags, [Type::TagType], null:true
-        field :recipe_ingredients, [Type::RecipeIngredientType], null:false
-        field :instructions, [Type::RecipeInstructionType], null:false
+        field :cookbooks, [Types::CookbookType], null:true
+        field :tags, [Types::TagType], null:true
+        field :recipe_ingredients, [Types::RecipeIngredientType], null:false
+        field :instructions, [Types::RecipeInstructionType], null:false
     end
 end

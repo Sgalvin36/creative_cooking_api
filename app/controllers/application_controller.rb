@@ -1,5 +1,6 @@
 class ApplicationController < ActionController::API
     include Pundit::Authorization
+    before_action :set_current_user
     after_action :verify_authorized
     rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
 
@@ -9,6 +10,18 @@ class ApplicationController < ActionController::API
         else
             verify_authorized
         end
+    end
+
+    def set_current_user
+        token = request.headers["Authorization"]&.split(" ")&.last
+        if token
+            decoded_token = JsonWebToken.decode(token)
+            @current_user = User.find_by(id: decoded_token&.dig("user_id"))
+        end
+    end
+
+    def current_user
+        @current_user
     end
 
     private

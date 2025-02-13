@@ -3,6 +3,6 @@ module Types
         field :id, ID, null:false
         field :instruction, String, null:false
         field :instruction_step, Integer, null:false
-        field :recipe, Type::RecipeType, null:true
+        field :recipe, Types::RecipeType, null:true
     end
 end

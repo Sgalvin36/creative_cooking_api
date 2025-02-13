@@ -15,6 +15,10 @@ class UserPolicy < ApplicationPolicy
     user.admin?
   end
 
+  def execute?
+    user
+  end
+  
   class Scope < ApplicationPolicy::Scope
     def resolve
       if user.admin?
