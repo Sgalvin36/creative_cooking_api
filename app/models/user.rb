@@ -8,7 +8,7 @@ class User < ApplicationRecord
     (?=.*[[:^alnum:]])
     /x
 
-    has_many :cookbooks, dependent: :destroy
+    has_one :cookbook
     has_many :user_recipe_modifications
     has_and_belongs_to_many :roles, :join_table => :users_roles
 

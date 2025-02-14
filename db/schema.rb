@@ -15,9 +15,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_27_220644) do
   enable_extension "pg_catalog.plpgsql"
 
   create_table "cookbook_recipes", force: :cascade do |t|
-    t.boolean "tried_it"
-    t.integer "cookbook_id", null: false
-    t.integer "recipe_id", null: false
+    t.string "tried_it", default: "no", null: false
+    t.bigint "cookbook_id", null: false
+    t.bigint "recipe_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["cookbook_id"], name: "index_cookbook_recipes_on_cookbook_id"
@@ -25,8 +25,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_27_220644) do
   end
 
   create_table "cookbook_tags", force: :cascade do |t|
-    t.integer "cookbook_id", null: false
-    t.integer "tag_id", null: false
+    t.bigint "cookbook_id", null: false
+    t.bigint "tag_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["cookbook_id"], name: "index_cookbook_tags_on_cookbook_id"
@@ -35,7 +35,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_27_220644) do
 
   create_table "cookbooks", force: :cascade do |t|
     t.string "cookbook_name"
-    t.integer "user_id", null: false
+    t.bigint "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_cookbooks_on_user_id"
@@ -43,10 +43,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_27_220644) do
 
   create_table "ingredient_modifications", force: :cascade do |t|
     t.float "modified_quantity"
-    t.integer "recipe_ingredient_id", null: false
-    t.integer "ingredient_id", null: false
-    t.integer "measurement_id", null: false
-    t.integer "user_recipe_modification_id", null: false
+    t.bigint "recipe_ingredient_id", null: false
+    t.bigint "ingredient_id", null: false
+    t.bigint "measurement_id", null: false
+    t.bigint "user_recipe_modification_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["ingredient_id"], name: "index_ingredient_modifications_on_ingredient_id"
@@ -69,9 +69,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_27_220644) do
 
   create_table "recipe_ingredients", force: :cascade do |t|
     t.float "quantity"
-    t.integer "ingredient_id", null: false
-    t.integer "measurement_id", null: false
-    t.integer "recipe_id", null: false
+    t.bigint "ingredient_id", null: false
+    t.bigint "measurement_id", null: false
+    t.bigint "recipe_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["ingredient_id"], name: "index_recipe_ingredients_on_ingredient_id"
@@ -82,15 +82,15 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_27_220644) do
   create_table "recipe_instructions", force: :cascade do |t|
     t.integer "instruction_step"
     t.string "instruction"
-    t.integer "recipe_id", null: false
+    t.bigint "recipe_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["recipe_id"], name: "index_recipe_instructions_on_recipe_id"
   end
 
   create_table "recipe_tags", force: :cascade do |t|
-    t.integer "recipe_id", null: false
-    t.integer "tag_id", null: false
+    t.bigint "recipe_id", null: false
+    t.bigint "tag_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["recipe_id"], name: "index_recipe_tags_on_recipe_id"
@@ -123,8 +123,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_27_220644) do
   end
 
   create_table "user_recipe_modifications", force: :cascade do |t|
-    t.integer "user_id", null: false
-    t.integer "recipe_id", null: false
+    t.bigint "user_id", null: false
+    t.bigint "recipe_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["recipe_id"], name: "index_user_recipe_modifications_on_recipe_id"
