@@ -11,7 +11,7 @@ describe RecipeBuilderPolicy do
     before do
         regular_user.roles << user_role
     end
-    
+
     permissions :create? do
         it "grants access if user is present" do
             expect(subject).to permit(regular_user, RecipeBuilder)

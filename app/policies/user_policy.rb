@@ -1,6 +1,6 @@
 class UserPolicy < ApplicationPolicy
   def index?
-    user.admin? 
+    user.admin?
   end
 
   def show?
@@ -18,11 +18,11 @@ class UserPolicy < ApplicationPolicy
   def execute?
     user
   end
-  
+
   class Scope < ApplicationPolicy::Scope
     def resolve
       if user.admin?
-        scope.all 
+        scope.all
       else
         scope.where(id: user.id)
       end

@@ -118,7 +118,7 @@ RSpec.describe UserPolicy, type: :policy do
 
       it 'limits scope to the current user' do
         scope = UserPolicy::Scope.new(user, User.all)
-        expect(scope.resolve).to eq([regular_user])
+        expect(scope.resolve).to eq([ regular_user ])
       end
     end
   end

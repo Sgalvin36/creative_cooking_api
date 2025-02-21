@@ -34,7 +34,7 @@ gem "thruster", require: false
 # Authentication/Authorization
 gem "rack-cors"
 gem "bcrypt", "~> 3.1.7"
-gem 'jwt', "~> 2.10.1"
+gem "jwt", "~> 2.10.1"
 gem "rolify"
 gem "pundit"
 
@@ -48,8 +48,8 @@ group :development, :test do
   gem "pry"
   gem "rspec-rails"
   gem "shoulda-matchers"
-  gem 'factory_bot_rails'
-  gem 'faker'
+  gem "factory_bot_rails"
+  gem "faker"
   gem "rubocop", require: false
   # Static analysis for security vulnerabilities [https://brakemanscanner.org/]
   gem "brakeman", require: false

@@ -5,7 +5,7 @@ FactoryBot.define do
         user_name { Faker::Internet.username }
         password { "Passwords123!" }
         password_confirmation { "Passwords123!" }
-    
+
         after(:create) do |user|
             user.add_role(:user) if user.roles.blank?
         end

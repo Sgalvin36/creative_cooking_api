@@ -6,15 +6,15 @@ RSpec.describe UserRecipeModificationPolicy, type: :policy do
 
   let(:admin) { User.create!(first_name: 'Admin', last_name: 'User', user_name: 'admin_user', password: 'Password01234!') }
   let(:regular_user) { User.create!(first_name: 'Regular', last_name: 'User', user_name: 'regular_user', password: 'Password01234!') }
-  let(:other_user) {create(:user)}
+  let(:other_user) { create(:user) }
   let(:guest) { nil }
 
-  let(:recipe) {create(:recipe)}
-  let(:record) { UserRecipeModification.create!(user_id: regular_user.id, recipe_id: recipe.id)}
+  let(:recipe) { create(:recipe) }
+  let(:record) { UserRecipeModification.create!(user_id: regular_user.id, recipe_id: recipe.id) }
 
   before do
-    admin.roles << admin_role 
-    regular_user.roles << user_role 
+    admin.roles << admin_role
+    regular_user.roles << user_role
     other_user.roles << user_role
   end
 

@@ -8,8 +8,8 @@ RSpec.describe CookbookPolicy, type: :policy do
   let(:regular_user) { User.create!(first_name: 'Regular', last_name: 'User', user_name: 'regular_user', password: 'Password01234!') }
 
   before do
-    admin_user.roles << admin_role 
-    regular_user.roles << user_role 
+    admin_user.roles << admin_role
+    regular_user.roles << user_role
   end
 
   let(:cookbook) { Cookbook.create!(cookbook_name: "Testy Test", user: regular_user) }
@@ -20,15 +20,15 @@ RSpec.describe CookbookPolicy, type: :policy do
   describe '.scope' do
     it "allows admin to see all cookbooks" do
       policy_scope = CookbookPolicy::Scope.new(admin_user, Cookbook.all).resolve
-      expect(policy_scope.to_a).to eq(Cookbook.all.to_a) 
+      expect(policy_scope.to_a).to eq(Cookbook.all.to_a)
     end
-    
+
     it "allows user to see only their own cookbooks" do
       policy_scope = CookbookPolicy::Scope.new(regular_user, Cookbook.all).resolve
       regular_user.reload
       cookbook.reload
 
-      expect(policy_scope.to_a).to eq([cookbook]) 
+      expect(policy_scope.to_a).to eq([ cookbook ])
     end
   end
 

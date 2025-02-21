@@ -11,8 +11,8 @@ describe RecipePolicy do
   let(:guest) { nil }
 
   before do
-    admin_user.roles << admin_role 
-    regular_user.roles << user_role 
+    admin_user.roles << admin_role
+    regular_user.roles << user_role
   end
 
   permissions :index? do
