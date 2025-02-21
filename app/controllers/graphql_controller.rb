@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class GraphqlController < ApplicationController
+  skip_after_action :verify_authorized
   # If accessing from outside this domain, nullify the session
   # This allows for outside API access while preventing CSRF attacks,
   # but you'll have to authenticate your user separately
@@ -9,10 +10,9 @@ class GraphqlController < ApplicationController
   def execute
     variables = prepare_variables(params[:variables])
     query = params[:query]
-    operation_name = params[:operationName]
+    operation_name = params[:operationName] || nil
     context = {
-      # Query context goes here, for example:
-      # current_user: current_user,
+      current_user: current_user
     }
     result = CreativeCookingApiSchema.execute(query, variables: variables, context: context, operation_name: operation_name)
     render json: result
