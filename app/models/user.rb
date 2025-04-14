@@ -12,9 +12,11 @@ class User < ApplicationRecord
     has_many :user_recipe_modifications
     has_and_belongs_to_many :roles, join_table: :users_roles
 
+    before_validation :downcase_user_name
+
     validates :first_name, presence: true
     validates :last_name, presence: true
-    validates :user_name, presence: true, uniqueness: true
+    validates :user_name, presence: true, uniqueness: { case_sensitive: false }
     validates :password, format: { with: PASSWORD_REGEXP, message: "condition failed" }
     has_secure_password
 
@@ -40,5 +42,9 @@ class User < ApplicationRecord
     def set_role(role_name)
         self.roles.destroy_all
         self.add_role(role_name)
+    end
+    
+    def downcase_user_name
+        self.user_name = user_name.downcase if user_name.present?
     end
 end
