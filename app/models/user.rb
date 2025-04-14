@@ -12,8 +12,9 @@ class User < ApplicationRecord
     has_many :user_recipe_modifications
     has_and_belongs_to_many :roles, join_table: :users_roles
 
-    before_validation :downcase_user_name
-
+    before_save :downcase_user_name
+    before_save :set_slug
+    
     validates :first_name, presence: true
     validates :last_name, presence: true
     validates :user_name, presence: true, uniqueness: { case_sensitive: false }
@@ -21,6 +22,8 @@ class User < ApplicationRecord
     has_secure_password
 
     after_create :assign_default_role
+
+
 
     def assign_default_role
         user_role = Role.find_or_create_by(name: "user")
@@ -46,5 +49,20 @@ class User < ApplicationRecord
     
     def downcase_user_name
         self.user_name = user_name.downcase if user_name.present?
+    end
+
+    def set_slug
+        if first_name.present? && last_name.present?
+            base_slug = "#{first_name.parameterize}-#{last_name.parameterize}"
+            self.slug = base_slug
+        elsif user_name.present?
+            self.slug = user_name.parameterize
+        else
+            self.slug = SecureRandom.hex(9)
+        end
+
+        while User.exists?(slug: slug)
+            self.slug = "#{slug}-#{SecureRandom.hex(3)}"
+        end
     end
 end
