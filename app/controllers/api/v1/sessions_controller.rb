@@ -1,4 +1,4 @@
-class SessionsController < ApplicationController
+class Api::V1::SessionsController < ApplicationController
     skip_after_action :verify_authorized, only: [ :create ]
 
     def create

@@ -7,6 +7,10 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   # root "posts#index"
-  post "/graphql", to: "graphql#execute"
-  post "/login", to: "sessions#create"
+  namespace :api do
+    namespace :v1 do
+      post "/graphql", to: "graphql#execute"
+      post "/login", to: "sessions#create"
+    end
+  end
 end
