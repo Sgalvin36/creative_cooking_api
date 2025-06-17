@@ -1,4 +1,4 @@
-class SessionsController < ApplicationController
+class Api::V1::SessionsController < ApplicationController
     skip_after_action :verify_authorized, only: [ :create ]
 
     def create
@@ -7,7 +7,7 @@ class SessionsController < ApplicationController
 
         if user&.authenticate(params[:password])
             token = JsonWebToken.encode({ user_id: user.id, roles: user.roles }) # Generate JWT
-            render json: { token: token, user: user, roles: user.roles }, status: :ok
+            render json: { token: token, user: { id: user.id, first_name: user.first_name, last_name: user.last_name, user_name: user.user_name }, roles: user.roles }, status: :ok
         else
             render json: { error: "Invalid email or password" }, status: :unauthorized
         end
