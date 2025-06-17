@@ -14,7 +14,7 @@ class User < ApplicationRecord
 
     before_save :downcase_user_name
     before_save :set_slug
-    
+
     validates :first_name, presence: true
     validates :last_name, presence: true
     validates :user_name, presence: true, uniqueness: { case_sensitive: false }
@@ -46,7 +46,7 @@ class User < ApplicationRecord
         self.roles.destroy_all
         self.add_role(role_name)
     end
-    
+
     def downcase_user_name
         self.user_name = user_name.downcase if user_name.present?
     end

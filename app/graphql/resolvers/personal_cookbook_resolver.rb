@@ -2,7 +2,7 @@ module Resolvers
     class PersonalCookbookResolver < Resolvers::BaseResolver
         type [ Types::RecipeType ], null: false
 
-        def resolve()
+        def resolve
             user = context[:current_user]
             return [] unless user&.cookbook
             authorize(user.cookbook, :show?, policy_class: CookbookPolicy)

@@ -5,7 +5,7 @@ module Resolvers
         argument :id, ID, required: true, description: "ID of the recipe"
 
         def resolve(id:)
-            recipe = Recipes.includes(:recipe_instructions, recipe_ingredients: [:measurement, :ingredient]).find(id)
+            recipe = Recipes.includes(:recipe_instructions, recipe_ingredients: [ :measurement, :ingredient ]).find(id)
             authorize(recipe, :show?, policy_class: RecipePolicy)
             recipe
         end

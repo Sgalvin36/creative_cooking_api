@@ -1,6 +1,6 @@
 module Resolvers
     class RandomRecipesResolver < Resolvers::BaseResolver
-        type [Types::RecipeType], null: false
+        type [ Types::RecipeType ], null: false
 
         argument :count, Integer, required: false, default_value: 5, description: "Number of random recipes to return"
 
