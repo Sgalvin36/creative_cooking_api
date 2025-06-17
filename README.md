@@ -344,9 +344,9 @@ Don't forget to give the project a star! Thanks again!
 
 ### Top contributors:
 
-<a href="https://github.com/othneildrew/Best-README-Template/graphs/contributors">
+<!-- <a href="https://github.com/othneildrew/Best-README-Template/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=othneildrew/Best-README-Template" alt="contrib.rocks image" />
-</a>
+</a> -->
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -362,9 +362,9 @@ Distributed under the Unlicense License. See `LICENSE.txt` for more information.
 
 ## Contact
 
-Your Name - [@your_twitter](https://twitter.com/your_username) - email@example.com
+Shane Galvin - Sgalvin36@gmail.com
 
-Project Link: [https://github.com/your_username/repo_name](https://github.com/your_username/repo_name)
+Project Link: [https://github.com/Sgalvin36/creative_cooking_fe](https://github.com/Sgalvin36/creative_cooking_fe)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
