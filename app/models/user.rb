@@ -18,7 +18,7 @@ class User < ApplicationRecord
     validates :first_name, presence: true
     validates :last_name, presence: true
     validates :user_name, presence: true, uniqueness: { case_sensitive: false }
-    validates :password, format: { with: PASSWORD_REGEXP, message: "condition failed" }
+    validates :password, format: { with: PASSWORD_REGEXP, message: "must be at least 12 characters and include a number, lowercase, uppercase, and special character" }
     has_secure_password
 
     after_create :assign_default_role
