@@ -3,6 +3,7 @@ module Types
         field :id, ID, null: false
         field :first_name, String, null: false
         field :last_name, String, null: false
+        field :email, String, null: false
         field :user_name, String, null: false
         field :slug, String, null: false
         field :roles, [ Types::RoleType ], null: false
