@@ -11,7 +11,7 @@ class User < ApplicationRecord
 
     validates :first_name, presence: true
     validates :last_name, presence: true
-    validates :email, presence: true, uniqueness: { case_sensitive: false}, format: { with: URI::MailTo::EMAIL_REGEXP }
+    validates :email, presence: true, uniqueness: { case_sensitive: false }, format: { with: URI::MailTo::EMAIL_REGEXP }
     validates :user_name, presence: true, uniqueness: { case_sensitive: false }
     validates :password, format: { with: PASSWORD_REGEXP, message: "must be at least 12 characters and include a number, lowercase, uppercase, and special character" }
     has_secure_password

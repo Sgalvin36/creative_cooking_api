@@ -8,11 +8,11 @@ class Api::V1::SessionsController < ApplicationController
         if user&.authenticate(params[:password])
             token = JsonWebToken.encode({ user_id: user.id, roles: user.roles }) # Generate JWT
             render json: {
-                token: token, 
+                token: token,
                 user: {
-                    id: user.id, 
-                    first_name: user.first_name, 
-                    last_name: user.last_name, 
+                    id: user.id,
+                    first_name: user.first_name,
+                    last_name: user.last_name,
                     user_name: user.user_name,
                     slug: user.slug
                 },
