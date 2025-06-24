@@ -2,7 +2,9 @@ class Api::V1::SessionsController < ApplicationController
     skip_after_action :verify_authorized, only: [ :create ]
 
     def create
-        user = User.find_by(user_name: params[:username])
+        identifier = params[:username] || params[:email]
+        user = User.find_by("user_name = :identifier OR email = :identifier", identifier: identifier)
+
 
 
         if user&.authenticate(params[:password])
