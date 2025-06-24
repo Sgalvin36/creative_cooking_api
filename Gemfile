@@ -34,7 +34,7 @@ gem "thruster", require: false
 # Authentication/Authorization
 gem "rack-cors"
 gem "bcrypt", "~> 3.1.7"
-gem "jwt", "~> 2.10.1"
+gem "jwt", "~> 3.1.0"
 gem "rolify"
 gem "pundit"
 
