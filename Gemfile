@@ -51,6 +51,7 @@ group :development, :test do
   gem "factory_bot_rails"
   gem "faker"
   gem "rubocop", require: false
+  gem "overcommit"
   # Static analysis for security vulnerabilities [https://brakemanscanner.org/]
   gem "brakeman", require: false
   gem "dotenv-rails"
