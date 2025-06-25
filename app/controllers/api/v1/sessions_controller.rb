@@ -21,7 +21,8 @@ class Api::V1::SessionsController < ApplicationController
                 roles: user.roles
             }, status: :ok
         else
-            render json: { error: "Invalid email or password" }, status: :unauthorized
+            sleep 0.5 # a way to slow down brute force attempts
+            render json: { error: "Invalid credentials" }, status: :unauthorized
         end
     end
 end
