@@ -2,7 +2,7 @@ require 'rails_helper'
 
 describe "Sessions Controller", type: :request do
     let!(:user) { create(:user) }
-    
+
     it "logs in a user with valid email and password" do
         post "/api/v1/login", params: { email: user.email, password: "Passwords123!" }
 
@@ -11,7 +11,6 @@ describe "Sessions Controller", type: :request do
     end
 
     it "logs in a user with valid username and password" do
-    
         post "/api/v1/login", params: { username: user.user_name, password: "Passwords123!" }
 
         expect(response).to have_http_status(:ok)
