@@ -130,7 +130,7 @@ GEM
       rdoc (>= 4.0.0)
       reline (>= 0.4.2)
     json (2.10.2)
-    jwt (3.1.0)
+    jwt (3.1.1)
       base64
     kamal (2.7.0)
       activesupport (>= 7.0)
@@ -393,7 +393,7 @@ DEPENDENCIES
   factory_bot_rails
   faker
   graphql
-  jwt (~> 3.1.0)
+  jwt (~> 3.1.1)
   kamal
   pg (~> 1.5)
   pry
