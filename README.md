@@ -140,11 +140,13 @@ Required variables:
 
 ```json
 {
-    "username": "test user"
     "password": "TheBestPassword"
+    **"username": "test user"
+    **"email": "theBestEmail@example.com"
 }
 ```
 
+\*\* Either email or username is required to access the login endpoint.
 <br><br>
 Expected Response:
 
