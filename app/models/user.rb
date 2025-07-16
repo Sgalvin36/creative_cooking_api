@@ -2,7 +2,7 @@ class User < ApplicationRecord
     rolify
     PASSWORD_REGEXP = /\A(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9])(.{12,})\z/
 
-    has_one :cookbook
+    has_many :cookbooks
     has_many :user_recipe_modifications
     has_and_belongs_to_many :roles, join_table: :users_roles
 

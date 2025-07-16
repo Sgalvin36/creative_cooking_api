@@ -15,8 +15,10 @@ class Api::V1::SessionsController < ApplicationController
                     id: user.id,
                     first_name: user.first_name,
                     last_name: user.last_name,
-                    user_name: user.user_name,
-                    slug: user.slug
+                    username: user.user_name,
+                    slug: user.slug,
+                    primary_cookbook_id: user.cookbooks[0]&.id,
+                    cookbook_count: user.cookbooks.count
                 },
                 roles: user.roles
             }, status: :ok
