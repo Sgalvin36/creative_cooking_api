@@ -1,6 +1,6 @@
 class CookbookPolicy < ApplicationPolicy
   def show?
-    record.public? || record.user == user || user&.has_role?(:admin)
+    !!(record.public? || record.user == user || user&.has_role?(:admin))
   end
 
   def update?
