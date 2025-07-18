@@ -8,7 +8,11 @@ class CookbookPolicy < ApplicationPolicy
   end
 
   def destroy?
-    user&.has_role?(:admin)
+    return false if user.nil?
+    return true if user.has_role?(:admin)
+
+    user_cookbook_count = user.cookbooks.limit(2).count
+    user == record.user && user_cookbook_count > 1
   end
 
   class Scope < ApplicationPolicy::Scope

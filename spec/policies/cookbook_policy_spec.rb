@@ -92,12 +92,18 @@ RSpec.describe CookbookPolicy, type: :policy do
       expect(subject.new(admin_user, cookbook).destroy?).to be true
     end
 
+    it "allows users to destroy their cookbooks as long as they have more than one" do
+      expect(subject.new(regular_user, cookbook).destroy?).to be true
+    end
+
     it "prevents user from destroying someone else's cookbook" do
       expect(subject.new(regular_user, other_cookbook).destroy?).to be false
     end
 
     it "prevents user from destroying their own cookbook" do
-      expect(subject.new(regular_user, cookbook).destroy?).to be false
+      single_cookbook_user = create(:user)
+      only_cookbook = single_cookbook_user.cookbooks[0]
+      expect(subject.new(single_cookbook_user, only_cookbook).destroy?).to be false
     end
   end
 end
