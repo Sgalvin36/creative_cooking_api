@@ -28,18 +28,6 @@ class User < ApplicationRecord
         self.add_role(:owner, cookbook)
     end
 
-    def admin?
-        roles.exists?(name: "admin")
-    end
-
-    def user?
-        roles.exists?(name: "user")
-    end
-
-    def editor?
-        roles.exists?(name: "editor")
-    end
-
     def set_role(role_name)
         unless has_role?(role_name)
             self.add_role(role_name)
