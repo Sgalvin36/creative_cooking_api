@@ -1,27 +1,23 @@
 class UserPolicy < ApplicationPolicy
   def index?
-    user.admin?
+    user.has_role?(:admin)
   end
 
   def show?
-    user.admin? || record == user
+    user.has_role?(:admin) || record == user
   end
 
   def update?
-    user.admin? || record == user
+    user.has_role?(:admin) || record == user
   end
 
   def destroy?
-    user.admin?
-  end
-
-  def execute?
-    user
+    user.has_role?(:admin)
   end
 
   class Scope < ApplicationPolicy::Scope
     def resolve
-      if user.admin?
+      if user.has_role?(:admin)
         scope.all
       else
         scope.where(id: user.id)
