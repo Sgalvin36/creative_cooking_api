@@ -2,7 +2,7 @@
 
 module Mutations
   class BaseMutation < GraphQL::Schema::RelayClassicMutation
-    include Pundit
+    include Pundit::Authorization
 
     argument_class Types::BaseArgument
     field_class Types::BaseField

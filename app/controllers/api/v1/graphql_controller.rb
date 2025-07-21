@@ -1,9 +1,10 @@
 # frozen_string_literal: true
 
 class Api::V1::GraphqlController < ApplicationController
-  authorize :graphql, :execute?
+  include Pundit::Authorization
 
   def execute
+    authorize :graphql, :execute?
     variables = prepare_variables(params[:variables])
     query = params[:query]
     operation_name = params[:operationName] || nil
