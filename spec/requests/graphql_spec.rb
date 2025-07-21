@@ -67,6 +67,29 @@ RSpec.describe "GraphQL API", type: :request do
                 expect(data["token"]).to be_present
                 expect(data["errors"]).to be_empty
             end
+
+            it "returns errors with invalid data" do
+                invalid_vars = {
+                    input: {
+                        firstName: "",
+                        lastName: "",
+                        email: "not-an-email",
+                        password: "short"
+                    }
+                }
+
+                post "/api/v1/graphql",
+                    params: { query: mutation, variables: invalid_vars }.to_json,
+                    headers: { "Content-Type" => "application/json" }
+
+                expect(response).to have_http_status(:ok)
+                json = JSON.parse(response.body)
+                data = json["data"]["registerUser"]
+
+                expect(data["user"]).to be_nil
+                expect(data["token"]).to be_nil
+                expect(data["errors"]).to_not be_empty
+            end
         end
     end
 end
