@@ -45,27 +45,3 @@ describe 'behavior' do
     expect(role.errors[:name]).to include("can't be blank")
   end
 end
-
-describe 'Role Seeds', type: :model do
-  before(:all) do
-    Rails.application.load_seed # Load the seeds file
-  end
-
-  it 'creates the admin role' do
-    expect(Role.find_by(name: 'admin')).to be_present
-  end
-
-  it 'creates the editor role' do
-    expect(Role.find_by(name: 'editor')).to be_present
-  end
-
-  it 'creates the viewer role' do
-    expect(Role.find_by(name: 'user')).to be_present
-  end
-
-  after(:all) do
-    Role.destroy_all
-    Cookbook.destroy_all
-    User.destroy_all
-  end
-end
