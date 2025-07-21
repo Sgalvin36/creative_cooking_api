@@ -2,7 +2,7 @@ class User < ApplicationRecord
     rolify
     PASSWORD_REGEXP = /\A(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9])(.{12,})\z/
 
-    has_one :cookbook
+    has_many :cookbooks
     has_many :user_recipe_modifications
     has_and_belongs_to_many :roles, join_table: :users_roles
 
@@ -17,29 +17,21 @@ class User < ApplicationRecord
     has_secure_password
 
     after_create :assign_default_role
-
-
+    after_create :create_default_cookbook
 
     def assign_default_role
-        user_role = Role.find_or_create_by(name: "user")
-        roles << user_role unless roles.include?(user_role)
+        self.add_role(:user)
     end
 
-    def admin?
-        roles.exists?(name: "admin")
-    end
-
-    def user?
-        roles.exists?(name: "user")
-    end
-
-    def editor?
-        roles.exists?(name: "editor")
+    def create_default_cookbook
+        cookbook = self.cookbooks.create!(cookbook_name: "#{first_name}'s Cookbook")
+        self.add_role(:owner, cookbook)
     end
 
     def set_role(role_name)
-        self.roles.destroy_all
-        self.add_role(role_name)
+        unless has_role?(role_name)
+            self.add_role(role_name)
+        end
     end
 
     def set_user_name

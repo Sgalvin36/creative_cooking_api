@@ -1,34 +1,48 @@
 require 'rails_helper'
 
 RSpec.describe CookbookPolicy, type: :policy do
-  let(:admin_role) { Role.find(name: 'admin') }
-  let(:user_role) { Role.find(name: 'user') }
+  let(:admin_role) { Role.find_or_create_by(name: 'admin') }
+  let(:user_role) { Role.find_or_create_by(name: 'user') }
 
-  let(:admin_user) { User.create!(first_name: 'Admin', last_name: 'User', user_name: 'admin_user', password: 'Password01234!') }
-  let(:regular_user) { User.create!(first_name: 'Regular', last_name: 'User', user_name: 'regular_user', password: 'Password01234!') }
+  let(:admin_user) { User.create!(first_name: 'Admin', last_name: 'User', email: "admin@example.com", user_name: 'admin_user', password: 'Password01234!') }
+  let(:regular_user) { User.create!(first_name: 'Regular', last_name: 'User', email: "regular@example.com", user_name: 'regular_user', password: 'Password01234!') }
+  let(:other_user) { User.create!(first_name: 'Other', last_name: 'User', email: "other@example.com", user_name: 'other_user', password: 'Password01234!') }
 
   before do
-    admin_user.roles << admin_role
-    regular_user.roles << user_role
+    admin_user.add_role(:admin)
+    regular_user.add_role(:user)
+    other_user.add_role(:user)
   end
 
-  let(:cookbook) { Cookbook.create!(cookbook_name: "Testy Test", user: regular_user) }
-  let(:other_user_cookbook) { create(:cookbook, user: (create(:user))) }
+  let(:cookbook) { Cookbook.create!(cookbook_name: "Testy Test", user: regular_user, public: false) }
+  let(:public_cookbook) { Cookbook.create!(cookbook_name: "Public Taste", user: other_user, public: true) }
+  let(:other_cookbook) { Cookbook.create!(cookbook_name: "Other Private Cookbook", user: other_user, public: false) }
 
   subject { described_class }
 
   describe '.scope' do
-    it "allows admin to see all cookbooks" do
-      policy_scope = CookbookPolicy::Scope.new(admin_user, Cookbook.all).resolve
-      expect(policy_scope.to_a).to eq(Cookbook.all.to_a)
+    before(:each) do
+      cookbook.reload
+      public_cookbook.reload
+      other_cookbook.reload
     end
 
-    it "allows user to see only their own cookbooks" do
-      policy_scope = CookbookPolicy::Scope.new(regular_user, Cookbook.all).resolve
-      regular_user.reload
-      cookbook.reload
+    it "allows admin to see all cookbooks" do
+      policy_scope = CookbookPolicy::Scope.new(admin_user, Cookbook.all).resolve
+      expect(policy_scope.to_a).to include(cookbook, public_cookbook, other_cookbook)
+    end
 
-      expect(policy_scope.to_a).to eq([ cookbook ])
+    it "allows user to see their own cookbooks and all public cookbooks" do
+      policy_scope = CookbookPolicy::Scope.new(regular_user, Cookbook.all).resolve
+
+      expect(policy_scope.to_a).to include(cookbook, public_cookbook)
+      expect(policy_scope.to_a).not_to include(other_cookbook)
+    end
+
+    it "allows guests to see only public cookbooks" do
+      policy_scope = CookbookPolicy::Scope.new(nil, Cookbook.all).resolve
+
+      expect(policy_scope.to_a).to include(public_cookbook)
     end
   end
 
@@ -37,12 +51,21 @@ RSpec.describe CookbookPolicy, type: :policy do
       expect(subject.new(admin_user, cookbook).show?).to be true
     end
 
-    it "allows user to view their own cookbook" do
+    it "allows user to view their own cookbook and public cookbooks" do
       expect(subject.new(regular_user, cookbook).show?).to be true
+      expect(subject.new(regular_user, public_cookbook).show?).to be true
     end
 
-    it "prevents user from viewing someone else's cookbook" do
-      expect(subject.new(regular_user, other_user_cookbook).show?).to be false
+    it "allows guests to view public cookbooks" do
+      expect(subject.new(nil, public_cookbook).show?).to be true
+    end
+
+    it "prevents user from viewing someone else's private cookbook" do
+      expect(subject.new(regular_user, other_cookbook).show?).to be false
+    end
+
+    it "prevents guest from viewing someone else's private cookbook" do
+      expect(subject.new(nil, other_cookbook).show?).to be false
     end
   end
 
@@ -55,8 +78,12 @@ RSpec.describe CookbookPolicy, type: :policy do
       expect(subject.new(regular_user, cookbook).update?).to be true
     end
 
-    it "prevents user from updating someone else's cookbook" do
-      expect(subject.new(regular_user, other_user_cookbook).update?).to be false
+    it "prevents user from updating someone's public cookbook" do
+      expect(subject.new(regular_user, public_cookbook).update?).to be false
+    end
+
+    it "prevents user from updating someone else's private cookbook" do
+      expect(subject.new(regular_user, other_cookbook).update?).to be false
     end
   end
 
@@ -65,12 +92,18 @@ RSpec.describe CookbookPolicy, type: :policy do
       expect(subject.new(admin_user, cookbook).destroy?).to be true
     end
 
+    it "allows users to destroy their cookbooks as long as they have more than one" do
+      expect(subject.new(regular_user, cookbook).destroy?).to be true
+    end
+
     it "prevents user from destroying someone else's cookbook" do
-      expect(subject.new(regular_user, other_user_cookbook).destroy?).to be false
+      expect(subject.new(regular_user, other_cookbook).destroy?).to be false
     end
 
     it "prevents user from destroying their own cookbook" do
-      expect(subject.new(regular_user, cookbook).destroy?).to be false
+      single_cookbook_user = create(:user)
+      only_cookbook = single_cookbook_user.cookbooks[0]
+      expect(subject.new(single_cookbook_user, only_cookbook).destroy?).to be false
     end
   end
 end
