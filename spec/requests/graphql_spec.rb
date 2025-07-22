@@ -22,6 +22,45 @@ RSpec.describe "GraphQL API", type: :request do
     end
 
     describe "Queries" do
+        describe "RandomRecipes" do
+            let!(:recipes) { create_list(:recipe, 10) }
+            let!(:user) { create(:user) }
+
+            let(:query) do
+                <<~GRAPHQL
+                    query($count: Int) {
+                        randomRecipes(count: $count) {
+                            id
+                            name
+                            image
+                            servingSize
+                        }
+                    }
+                GRAPHQL
+            end
+
+            it "returns the default number of random recipes (5)" do
+                post "/api/v1/graphql", params: { query: query }
+
+                json = JSON.parse(response.body)
+                data = json["data"]["randomRecipes"]
+
+                expect(response).to have_http_status(:ok)
+                expect(data.size).to eq(5)
+                expect(data.first).to include("id", "name", "image", "servingSize")
+            end
+
+            it "returns a custom number of random recipes when count is specified" do
+                post "/api/v1/graphql", params: { query: query, variables: { count: 3 }.to_json }
+
+                json = JSON.parse(response.body)
+                data = json["data"]["randomRecipes"]
+                puts json
+                expect(response).to have_http_status(:ok)
+                expect(data.size).to eq(3)
+                expect(data.first).to include("id", "name", "image", "servingSize")
+            end
+        end
     end
 
     describe "Mutations" do

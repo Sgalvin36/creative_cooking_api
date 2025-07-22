@@ -6,7 +6,6 @@ module Resolvers
 
         def resolve(count:)
             authorize(Recipe, :index?, policy_class: RecipePolicy)
-            # Randomly select `count` recipes. The exact method depends on your DB adapter.
             Recipe.order("RANDOM()").limit(count)
         end
     end
