@@ -7,8 +7,10 @@ FactoryBot.define do
         password { "Passwords123!" }
         password_confirmation { "Passwords123!" }
 
-        after(:create) do |user|
-            user.add_role(:user) if user.roles.blank?
+        trait :admin do
+            after(:create) do |user|
+                user.add_role(:admin)
+            end
         end
     end
 end

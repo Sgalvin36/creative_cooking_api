@@ -1,5 +1,5 @@
 module Resolvers
-    class PersonalCookbookResolver < Resolvers::BaseResolver
+    class CookbookRecipesResolver < Resolvers::BaseResolver
         type [ Types::RecipeType ], null: false
 
         def resolve
