@@ -1,13 +1,10 @@
 # frozen_string_literal: true
 
 class Api::V1::GraphqlController < ApplicationController
-  skip_after_action :verify_authorized
-  # If accessing from outside this domain, nullify the session
-  # This allows for outside API access while preventing CSRF attacks,
-  # but you'll have to authenticate your user separately
-  # protect_from_forgery with: :null_session
+  include Pundit::Authorization
 
   def execute
+    authorize :graphql, :execute?
     variables = prepare_variables(params[:variables])
     query = params[:query]
     operation_name = params[:operationName] || nil

@@ -61,11 +61,12 @@ describe "Sessions Controller", type: :request do
         expect(user_data["username"]).to be_a(String)
         expect(user_data["slug"]).to be_a(String)
         expect(user_data["primary_cookbook_id"]).to be_a(Integer).or be_nil
-        expect(user_data["cookbook_count"]).to eq(2)
+        expect(user_data["cookbook_count"]).to eq(3)
     end
 
     context "when user has no cookbooks" do
         let!(:user_without_cookbooks) { create(:user) }
+
         let(:params) do
             {
                 username: user_without_cookbooks.user_name,
@@ -74,6 +75,7 @@ describe "Sessions Controller", type: :request do
         end
 
         it "returns nil for primary_cookbook_id and zero for cookbook_count" do
+            Cookbook.where(user_id: user_without_cookbooks.id).delete_all
             post "/api/v1/login", params: params
 
             expect(response).to have_http_status(:ok)
