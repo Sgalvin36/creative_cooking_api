@@ -55,9 +55,31 @@ RSpec.describe "GraphQL API", type: :request do
 
                 json = JSON.parse(response.body)
                 data = json["data"]["randomRecipes"]
-                puts json
+
                 expect(response).to have_http_status(:ok)
                 expect(data.size).to eq(3)
+                expect(data.first).to include("id", "name", "image", "servingSize")
+            end
+
+            it "returns the default number of random recipes when count is out of range (< 1)" do
+                post "/api/v1/graphql", params: { query: query, variables: { count: -4 }.to_json }
+
+                json = JSON.parse(response.body)
+                data = json["data"]["randomRecipes"]
+
+                expect(response).to have_http_status(:ok)
+                expect(data.size).to eq(5)
+                expect(data.first).to include("id", "name", "image", "servingSize")
+            end
+
+            it "returns the default number of random recipes when count is nil" do
+                post "/api/v1/graphql", params: { query: query, variables: { count: nil }.to_json }
+
+                json = JSON.parse(response.body)
+                data = json["data"]["randomRecipes"]
+
+                expect(response).to have_http_status(:ok)
+                expect(data.size).to eq(5)
                 expect(data.first).to include("id", "name", "image", "servingSize")
             end
         end
