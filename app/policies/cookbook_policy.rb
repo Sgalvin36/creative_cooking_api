@@ -26,4 +26,10 @@ class CookbookPolicy < ApplicationPolicy
       end
     end
   end
+
+  class OwnedScope < Scope
+    def resolve
+      scope.where("user_id = ?", user.id)
+    end
+  end
 end

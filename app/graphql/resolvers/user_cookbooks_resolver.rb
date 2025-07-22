@@ -2,11 +2,10 @@ module Resolvers
     class UserCookbooksResolver < Resolvers::BaseResolver
         type [ Types::RecipeType ], null: false
 
+        description "Return only the user's public and private cookbooks"
+
         def resolve
-            user = context[:current_user]
-            return [] unless user&.cookbook
-            authorize(user.cookbook, :show?, policy_class: CookbookPolicy)
-            user.cookbook.recipes
+            Pundit.policy_scope!(context[:current_user], [ :owned, Cookbook ]).order(:cookbook_name)
         end
     end
 end
