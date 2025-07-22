@@ -83,6 +83,65 @@ RSpec.describe "GraphQL API", type: :request do
                 expect(data.first).to include("id", "name", "image", "servingSize")
             end
         end
+
+        describe "OneRecipe" do
+            let!(:recipe) { create(:recipe, serving_size: 4, image: "http://example.com/image.jpg") }
+            let!(:instruction) { create(:recipe_instruction, recipe: recipe, instruction_step: 1, instruction: "Do something") }
+            let!(:ingredient) { create(:ingredient) }
+            let!(:measurement) { create(:measurement) }
+            let!(:recipe_ingredient) do
+                create(:recipe_ingredient, recipe: recipe, ingredient: ingredient, measurement: measurement)
+            end
+
+            let(:query) do
+                <<~GRAPHQL
+                    query($id: ID!) {
+                        oneRecipe(id: $id) {
+                            id
+                            name
+                            image
+                            servingSize
+                            recipeInstructions {
+                                instructionStep
+                                instruction
+                            }
+                            recipeIngredients {
+                                quantity
+                                measurement {
+                                    unit
+                                }
+                                ingredient {
+                                    name
+                                }
+                            }
+                        }
+                    }
+                GRAPHQL
+            end
+
+            it "returns the full recipe with all associated data" do
+                post "/api/v1/graphql",
+                    params: {
+                        query: query,
+                        variables: { id: recipe.id }.to_json
+                    }
+
+                json = JSON.parse(response.body)
+                data = json["data"]["oneRecipe"]
+
+                expect(response).to have_http_status(:ok)
+                expect(data["id"]).to eq(recipe.id.to_s)
+                expect(data["name"]).to eq(recipe.name)
+                expect(data["image"]).to eq(recipe.image)
+                expect(data["servingSize"]).to eq(recipe.serving_size)
+                expect(data["recipeInstructions"].first["instructionStep"]).to eq(instruction.instruction_step)
+                expect(data["recipeInstructions"].first["instruction"]).to eq(instruction.instruction)
+                ingredient_data = data["recipeIngredients"].first
+                expect(ingredient_data["quantity"]).to eq(recipe_ingredient.quantity)
+                expect(ingredient_data["measurement"]["unit"]).to eq(measurement.unit)
+                expect(ingredient_data["ingredient"]["name"]).to eq(ingredient.name)
+            end
+        end
     end
 
     describe "Mutations" do
