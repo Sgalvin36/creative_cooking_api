@@ -1,6 +1,6 @@
 module Resolvers
     class UserCookbooksResolver < Resolvers::BaseResolver
-        type [ Types::RecipeType ], null: false
+        type [ Types::CookbookType ], null: false
 
         description "Return only the user's public and private cookbooks"
 

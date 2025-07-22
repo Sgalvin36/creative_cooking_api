@@ -10,7 +10,7 @@ module Types
 
       field :user_cookbooks, resolver: Resolvers::UserCookbooksResolver, description: "Fetch all cookbooks created by the currently signed-in user"
 
-      field :public_cookbooks, resolver: Resolvers::AllPublicCookbooksResolver, description: "Fetch all public cookbooks in database"
+      field :public_cookbooks, resolver: Resolvers::PublicCookbooksResolver, description: "Fetch all public cookbooks in database"
 
       field :cookbook_recipes, resolver: Resolvers::CookbookRecipesResolver, description: "Fetch all recipes from a specific cookbook ID. Must be public or owned by user."
   end

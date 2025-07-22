@@ -1,5 +1,5 @@
 module Resolvers
-    class AllPublicCookbooksResolver < Resolvers::BaseResolver
+    class PublicCookbooksResolver < Resolvers::BaseResolver
         type [ Types::CookbookType ], null: false
 
         description "Returns all cookbooks that have been marked as public and are visible to anyone"
