@@ -6,5 +6,10 @@ module Types
         field :user, Types::UserType, null: false
         field :recipes, [ Types::RecipeType ], null: false
         field :tags, [ Types::TagType ], null: true
+        field :can_edit, Boolean, null: false
+
+        def can_edit
+            Pundit.policy(context[:current_user], object).update?
+        end
     end
 end

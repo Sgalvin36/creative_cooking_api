@@ -238,6 +238,49 @@ RSpec.describe "GraphQL API", type: :request do
                 end
             end
         end
+
+        describe "cookbookRecipes" do
+            let(:cookbook) { user.cookbooks.first }
+            let!(:recipes) { create_list(:recipe, 3) }
+
+            before do
+                recipes.each do |recipe|
+                    create(:cookbook_recipe, cookbook: cookbook, recipe: recipe)
+                end
+            end
+
+            let(:query) do
+                <<~GRAPHQL
+                    query ($id: ID!) {
+                        cookbookRecipes (id: $id) {
+                            id
+                            cookbookName
+                            public
+                            user {
+                                id
+                            }
+                            recipes {
+                                id
+                                name
+                                image
+                            }
+                        }
+                    }
+                GRAPHQL
+            end
+
+            it "returns the cookbook and its recipes if authorized" do
+                post api_v1_graphql_path, params: { query: query, variables: { id: cookbook.id } }.to_json, headers: auth_headers(user)
+
+                json = JSON.parse(response.body)
+                data = json["data"]["cookbookRecipes"]
+
+                expect(data["id"]).to eq(cookbook.id.to_s)
+                expect(data["cookbookName"]).to eq(cookbook.cookbook_name)
+                expect(data["recipes"].size).to eq(3)
+                expect(data["recipes"].map { |r| r["name"] }).to match_array(recipes.map(&:name))
+            end
+        end
     end
 
     describe "Mutations" do
