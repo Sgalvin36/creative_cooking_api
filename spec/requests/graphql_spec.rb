@@ -256,6 +256,7 @@ RSpec.describe "GraphQL API", type: :request do
                             id
                             cookbookName
                             public
+                            canEdit
                             user {
                                 id
                             }
@@ -269,7 +270,7 @@ RSpec.describe "GraphQL API", type: :request do
                 GRAPHQL
             end
 
-            it "returns the cookbook and its recipes if authorized" do
+            it "returns the cookbook and its recipes with canEdit: true if user is authorized to edit cookbook" do
                 post api_v1_graphql_path, params: { query: query, variables: { id: cookbook.id } }.to_json, headers: auth_headers(user)
 
                 json = JSON.parse(response.body)
@@ -279,6 +280,22 @@ RSpec.describe "GraphQL API", type: :request do
                 expect(data["cookbookName"]).to eq(cookbook.cookbook_name)
                 expect(data["recipes"].size).to eq(3)
                 expect(data["recipes"].map { |r| r["name"] }).to match_array(recipes.map(&:name))
+                expect(data["canEdit"]).to eq(true)
+            end
+
+            it "returns the cookbook and its recipes with canEdit: false if user is not authorized to edit cookbook" do
+                other_user = create(:user)
+
+                post api_v1_graphql_path, params: { query: query, variables: { id: cookbook.id } }.to_json, headers: auth_headers(other_user)
+
+                json = JSON.parse(response.body)
+                data = json["data"]["cookbookRecipes"]
+
+                expect(data["id"]).to eq(cookbook.id.to_s)
+                expect(data["cookbookName"]).to eq(cookbook.cookbook_name)
+                expect(data["recipes"].size).to eq(3)
+                expect(data["recipes"].map { |r| r["name"] }).to match_array(recipes.map(&:name))
+                expect(data["canEdit"]).to eq(false)
             end
         end
     end
