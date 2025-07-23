@@ -2,29 +2,24 @@ require 'rails_helper'
 
 RSpec.describe "GraphQL API", type: :request do
     let(:user) { create(:user) }
-    let(:login_params) do
-        {
-            email: user.email,
-            password: user.password
-        }
-    end
+    let(:admin) { create(:user, :admin) }
 
-    let(:auth_token) do
-        post "/api/v1/login", params: login_params
-        JSON.parse(response.body)["token"]
-    end
 
-    let(:headers) do
-        {
-            "Authorization" => "Bearer #{auth_token}",
-            "Content-Type" => "application/json"
-        }
+    def auth_headers(user = nil)
+        if user
+            token = JsonWebToken.encode(user_id: user.id)
+            {
+                "Authorization" => "Bearer #{token}",
+                "Content-Type" => "application/json"
+            }
+        else
+            { "Content-Type" => "application/json" }
+        end
     end
 
     describe "Queries" do
         describe "RandomRecipes" do
             let!(:recipes) { create_list(:recipe, 10) }
-            let!(:user) { create(:user) }
 
             let(:query) do
                 <<~GRAPHQL
@@ -40,7 +35,7 @@ RSpec.describe "GraphQL API", type: :request do
             end
 
             it "returns the default number of random recipes (5)" do
-                post "/api/v1/graphql", params: { query: query }
+                post api_v1_graphql_path, params: { query: query }.to_json, headers: auth_headers(nil)
 
                 json = JSON.parse(response.body)
                 data = json["data"]["randomRecipes"]
@@ -51,8 +46,7 @@ RSpec.describe "GraphQL API", type: :request do
             end
 
             it "returns a custom number of random recipes when count is specified" do
-                post "/api/v1/graphql", params: { query: query, variables: { count: 3 }.to_json }
-
+                post api_v1_graphql_path, params: { query: query, variables: { count: 3 } }.to_json, headers: auth_headers(nil)
                 json = JSON.parse(response.body)
                 data = json["data"]["randomRecipes"]
 
@@ -62,7 +56,7 @@ RSpec.describe "GraphQL API", type: :request do
             end
 
             it "returns the default number of random recipes when count is out of range (< 1)" do
-                post "/api/v1/graphql", params: { query: query, variables: { count: -4 }.to_json }
+                post api_v1_graphql_path, params: { query: query, variables: { count: -4 } }.to_json, headers: auth_headers(nil)
 
                 json = JSON.parse(response.body)
                 data = json["data"]["randomRecipes"]
@@ -73,7 +67,7 @@ RSpec.describe "GraphQL API", type: :request do
             end
 
             it "returns the default number of random recipes when count is nil" do
-                post "/api/v1/graphql", params: { query: query, variables: { count: nil }.to_json }
+                post api_v1_graphql_path, params: { query: query, variables: { count: nil } }.to_json, headers: auth_headers(nil)
 
                 json = JSON.parse(response.body)
                 data = json["data"]["randomRecipes"]
@@ -120,11 +114,7 @@ RSpec.describe "GraphQL API", type: :request do
             end
 
             it "returns the full recipe with all associated data" do
-                post "/api/v1/graphql",
-                    params: {
-                        query: query,
-                        variables: { id: recipe.id }.to_json
-                    }
+                post api_v1_graphql_path, params: { query: query, variables: { id: recipe.id } }.to_json, headers: auth_headers(nil)
 
                 json = JSON.parse(response.body)
                 data = json["data"]["oneRecipe"]
@@ -140,6 +130,155 @@ RSpec.describe "GraphQL API", type: :request do
                 expect(ingredient_data["quantity"]).to eq(recipe_ingredient.quantity)
                 expect(ingredient_data["measurement"]["unit"]).to eq(measurement.unit)
                 expect(ingredient_data["ingredient"]["name"]).to eq(ingredient.name)
+            end
+        end
+
+        describe "publicCookbooks" do
+            let!(:public_cookbooks) { create_list(:user, 3) } # auto generates users initial cookbook as public
+            let!(:user_private_cookbook) { create(:cookbook, user: user, public: false) }
+            let!(:admin_private_cookbook) { create(:cookbook, user: admin, public: false) }
+
+            let(:query) do
+                <<~GRAPHQL
+                    query {
+                        publicCookbooks {
+                            id
+                            cookbookName
+                            public
+                            user {
+                                id
+                            }
+                        }
+                    }
+                GRAPHQL
+            end
+
+            context "when no user is logged in" do
+                it "returns only public cookbooks" do
+                    post api_v1_graphql_path, params: { query: query }.to_json, headers: auth_headers(nil)
+
+                    json = JSON.parse(response.body)
+                    data = json["data"]["publicCookbooks"]
+
+                    expect(response).to have_http_status(:ok)
+                    expect(data.count).to eq(5)
+                    expect(data.all? { |cb| cb["public"] == true }).to be true
+                end
+            end
+
+            context "when a regular user is logged in" do
+                it "returns public cookbooks and the user's private cookbooks" do
+                    post api_v1_graphql_path, params: { query: query }.to_json, headers: auth_headers(user)
+
+                    json = JSON.parse(response.body)
+                    data = json["data"]["publicCookbooks"]
+
+                    expect(response).to have_http_status(:ok)
+
+                    cookbook_ids = data.map { |cb| cb["id"].to_i }
+                    expect(cookbook_ids).to include(user_private_cookbook.id)
+                    expect(cookbook_ids).to include(public_cookbooks.first.cookbooks.first.id)
+                    expect(cookbook_ids).to_not include(admin_private_cookbook.id)
+                    expect(data.any? { |cb| cb["public"] == false }).to be true
+                end
+            end
+
+            context "when an admin user is logged in" do
+                it "returns all cookbooks including private ones" do
+                    post api_v1_graphql_path, params: { query: query }.to_json, headers: auth_headers(admin)
+
+                    json = JSON.parse(response.body)
+                    data = json["data"]["publicCookbooks"]
+
+                    expect(response).to have_http_status(:ok)
+
+                    cookbook_ids = data.map { |cb| cb["id"].to_i }
+                    expect(cookbook_ids).to include(admin_private_cookbook.id)
+                    expect(cookbook_ids).to include(user_private_cookbook.id)
+                    expect(cookbook_ids).to include(public_cookbooks.first.cookbooks.first.id)
+                    expect(data.any? { |cb| cb["public"] == false }).to be true
+                end
+            end
+        end
+
+        describe "userCookbooks" do
+            let!(:user_private_cookbook) { create(:cookbook, user: user, public: false) }
+            let!(:user_public_cookbook) { create(:cookbook, user: user) }
+            let!(:public_user) { create(:user) }
+
+            let(:query) do
+                <<~GRAPHQL
+                    query {
+                        userCookbooks {
+                            id
+                            cookbookName
+                            public
+                            user {
+                                id
+                            }
+                        }
+                    }
+                GRAPHQL
+            end
+
+            context "when a regular user is logged in" do
+                it "returns the user's owned cookbooks" do
+                    post api_v1_graphql_path, params: { query: query }.to_json, headers: auth_headers(user)
+
+                    json = JSON.parse(response.body)
+                    data = json["data"]["userCookbooks"]
+
+                    expect(response).to have_http_status(:ok)
+
+                    cookbook_ids = data.map { |cb| cb["id"].to_i }
+                    expect(cookbook_ids).to include(user_private_cookbook.id)
+                    expect(cookbook_ids).to include(user_public_cookbook.id)
+                    expect(cookbook_ids).not_to include(public_user.cookbooks.first.id)
+                    expect(data.any? { |cb| cb["public"] == false }).to be true
+                end
+            end
+        end
+
+        describe "cookbookRecipes" do
+            let(:cookbook) { user.cookbooks.first }
+            let!(:recipes) { create_list(:recipe, 3) }
+
+            before do
+                recipes.each do |recipe|
+                    create(:cookbook_recipe, cookbook: cookbook, recipe: recipe)
+                end
+            end
+
+            let(:query) do
+                <<~GRAPHQL
+                    query ($id: ID!) {
+                        cookbookRecipes (id: $id) {
+                            id
+                            cookbookName
+                            public
+                            user {
+                                id
+                            }
+                            recipes {
+                                id
+                                name
+                                image
+                            }
+                        }
+                    }
+                GRAPHQL
+            end
+
+            it "returns the cookbook and its recipes if authorized" do
+                post api_v1_graphql_path, params: { query: query, variables: { id: cookbook.id } }.to_json, headers: auth_headers(user)
+
+                json = JSON.parse(response.body)
+                data = json["data"]["cookbookRecipes"]
+
+                expect(data["id"]).to eq(cookbook.id.to_s)
+                expect(data["cookbookName"]).to eq(cookbook.cookbook_name)
+                expect(data["recipes"].size).to eq(3)
+                expect(data["recipes"].map { |r| r["name"] }).to match_array(recipes.map(&:name))
             end
         end
     end

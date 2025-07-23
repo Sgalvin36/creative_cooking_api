@@ -132,6 +132,47 @@ Get started by making sure that ruby is installed on your computer so that you'l
 
 ## Usage
 
+### Registering a user:
+
+Endpoint: `/graphql`
+<br><br>
+Required variables:
+
+```json
+{
+  "query": "mutation RegisterUser($input: RegisterUserInput!) { registerUser(input: $input) { user { id firstName lastName email } token errors } }",
+  "variables": {
+    "input": {
+      "firstName": "$firstName",
+      "lastName": "$lastName",
+      "email": "$email",
+      "password": "$password",
+      "passwordConfirmation": "$passwordConfirmation"
+    }
+  },
+  "operationName": "RegisterUser"
+}
+```
+
+Expected response:
+
+```json
+{
+  "data": {
+    "registerUser": {
+      "user": {
+        "id": "1",
+        "firstName": "Steve",
+        "lastName": "Erwin",
+        "email": "SErwin@example.com"
+      },
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...", // JWT or similar
+      "errors": []
+    }
+  }
+}
+```
+
 ### Signing in a user:
 
 Endpoint: `/login`
@@ -195,49 +236,6 @@ Required variables:
 
 <br>
 
-**Expected Response:**
-
-```json
-{
-  "data": {
-    "recipes": [
-      {
-        "id": "1",
-        "name": "360 Deli"
-      },
-      {
-        "id": "2",
-        "name": "WBL House"
-      },
-      {
-        "id": "3",
-        "name": "Fat Grill"
-      },
-      {
-        "id": "4",
-        "name": "Sugar Deli"
-      }
-    ]
-  }
-}
-```
-
-#### **Personal Cookbook**
-
-Endpoint: `/graphql`
-<br><br>
-If you want to get all the recipes associated to the logged in users cookbook. <br>
-**Required variables:**
-
-```json
-{
-  "query": "query GetPersonalCookbook { personalCookbook { id name image servingSize } }",
-  "variables": {},
-  "operationName": "GetPersonalCookbook"
-}
-```
-
-<br><br>
 Expected Response:
 
 ```json
@@ -267,48 +265,285 @@ Expected Response:
 
 #### **Random Recipes**
 
-Endpoint: `/graphql`
-<br><br>
-Fetch a random amount of recipes. Pass the number as the count variable (optional). <br>
-
-**Required variables:**
-
-```json
-{
-  "query": "query GetRandomRecipes($count: Int) { randomRecipes(count: $count) { id name image servingSize } }",
-  "variables": { "count": 5 },
-  "operationName": "GetRandomRecipes"
-}
-```
-
-<br><br>
-Expected Response:
-
-```json
-
-```
-
-#### **Single Recipe**
+An endpoint to get a random assortment of recipes, default is 5 recipes but can take in a variable to take in more or less depending on the needs of the user.
 
 Endpoint: `/graphql`
 <br><br>
-Fetch a single recipes full information by ID. <br>
-
-**Required variables:**
+Required variables:
 
 ```json
 {
-  "query": "query GetRecipe($id: ID!) { recipe(id: $id) { id name image servingSize recipeInstructions { instructionStep instruction } recipeIngredients { quantity measurement { unit } ingredient { name } } } }",
-  "variables": { "id": "RECIPE_ID_HERE" },
-  "operationName": "GetRecipe"
+  "query": "query RandomRecipes($count: Int) { randomRecipes(count: $count) { id name image servingSize } }",
+  "variables": { "count": 9 },
+  "operationName": "RandomRecipes"
 }
 ```
 
-<br><br>
 Expected Response:
 
 ```json
+{
+  "data": {
+    "randomRecipes": [
+      {
+        "id": "1",
+        "name": "Spicy Thai Noodles",
+        "image": "https://loremflickr.com/300/300/food?lock=1",
+        "servingSize": 2
+      },
+      {
+        "id": "2",
+        "name": "Grilled Lemon Chicken",
+        "image": "https://loremflickr.com/300/300/food?lock=2",
+        "servingSize": 4
+      },
 
+      ...
+
+      {
+        "id": "9",
+        "name": "Vegan Burrito Bowl",
+        "image": "https://loremflickr.com/300/300/food?lock=9",
+        "servingSize": 3
+      }
+    ]
+  }
+}
+```
+
+#### **Full Recipe Data**
+
+An endpoint to get all the data associated with a single recipe.
+
+Endpoint: `/graphql`
+<br><br>
+Required variables:
+
+```json
+{
+  "query": "query OneRecipe($id: ID!) { oneRecipe(id: $id) { id name image servingSize recipeInstructions { instructionStep instruction } recipeIngredients { quantity measurement { unit } ingredient { name } } } }",
+  "variables": { "id": 1234 },
+  "operationName": "OneRecipe"
+}
+```
+
+Expected Response:
+
+```json
+{
+  "data": {
+    "oneRecipe": {
+      "id": "1234",
+      "name": "Grilled Lemon Chicken",
+      "image": "https://loremflickr.com/300/300/food?lock=1234",
+      "servingSize": 4,
+      "recipeInstructions": [
+        {
+          "instructionStep": 1,
+          "instruction": "Preheat grill to medium-high heat."
+        },
+        {
+          "instructionStep": 2,
+          "instruction": "Marinate chicken in lemon juice, garlic, and herbs for 30 minutes."
+        },
+        {
+          "instructionStep": 3,
+          "instruction": "Grill chicken for 6–8 minutes per side or until fully cooked."
+        }
+      ],
+      "recipeIngredients": [
+        {
+          "quantity": "2",
+          "measurement": {
+            "unit": "pieces"
+          },
+          "ingredient": {
+            "name": "Chicken breasts"
+          }
+        },
+        {
+          "quantity": "1",
+          "measurement": {
+            "unit": "tbsp"
+          },
+          "ingredient": {
+            "name": "Olive oil"
+          }
+        },
+        {
+          "quantity": "2",
+          "measurement": {
+            "unit": "tbsp"
+          },
+          "ingredient": {
+            "name": "Lemon juice"
+          }
+        },
+        {
+          "quantity": "1",
+          "measurement": {
+            "unit": "tsp"
+          },
+          "ingredient": {
+            "name": "Garlic (minced)"
+          }
+        }
+      ]
+    }
+  }
+}
+```
+
+### Querying for cookbooks
+
+#### **Public Cookbooks**
+
+An endpoint to get all the public cookbooks available and will return a list dependent on if a guest, a user, or admin is making the request. The current user is what defines what is returned.
+
+Endpoint: `/graphql`
+<br><br>
+Required variables:
+
+```json
+{
+  "query": "query PublicCookbooks { publicCookbooks { id cookbookName public user { id } } }",
+  "operationName": "PublicCookbooks"
+}
+```
+
+Expected Response:
+
+```json
+{
+  "data": {
+    "publicCookbooks": [
+      {
+        "id": "1",
+        "cookbookName": "Weeknight Dinners",
+        "public": true,
+        "user": {
+          "id": "101"
+        }
+      },
+      {
+        "id": "2",
+        "cookbookName": "Vegan Favorites",
+        "public": true,
+        "user": {
+          "id": "102"
+        }
+      },
+      {
+        "id": "3",
+        "cookbookName": "Family Classics",
+        "public": true,
+        "user": {
+          "id": "103"
+        }
+      }
+    ]
+  }
+}
+```
+
+#### **User Cookbooks**
+
+An endpoint to get all the cookbooks owned by the current user.
+
+Endpoint: `/graphql`
+<br><br>
+Required variables:
+
+```json
+{
+  "query": "query UserCookbooks { userCookbooks { id cookbookName public user { id } } }",
+  "operationName": "UserCookbooks"
+}
+```
+
+Expected Response:
+
+```json
+{
+  "data": {
+    "publicCookbooks": [
+      {
+        "id": "1",
+        "cookbookName": "Weeknight Dinners",
+        "public": true,
+        "user": {
+          "id": "101"
+        }
+      },
+      {
+        "id": "2",
+        "cookbookName": "Vegan Favorites",
+        "public": false,
+        "user": {
+          "id": "101"
+        }
+      },
+      {
+        "id": "3",
+        "cookbookName": "Family Classics",
+        "public": true,
+        "user": {
+          "id": "101"
+        }
+      }
+    ]
+  }
+}
+```
+
+#### **Cookbook Recipes**
+
+An endpoint to get all the recipes associated with a specific cookbook.
+
+Endpoint: `/graphql`
+<br><br>
+Required variables:
+
+```json
+{
+  "query": "query CookbookRecipes ($id: ID!) { cookbookRecipes (id: $id) { id cookbookName public user { id } recipes { id name image } } }",
+  "variables": { "id": 1 },
+  "operationName": "CookbookRecipes"
+}
+```
+
+Expected Response:
+
+```json
+{
+  "data": {
+    "cookbookRecipes": {
+      "id": "1",
+      "cookbookName": "Mediterranean Meals",
+      "public": true,
+      "user": {
+        "id": "301"
+      },
+      "recipes": [
+        {
+          "id": "101",
+          "name": "Greek Salad",
+          "image": "https://loremflickr.com/300/300/food?lock=101"
+        },
+        {
+          "id": "102",
+          "name": "Lemon Herb Chicken",
+          "image": "https://loremflickr.com/300/300/food?lock=102"
+        },
+        {
+          "id": "103",
+          "name": "Stuffed Peppers",
+          "image": "https://loremflickr.com/300/300/food?lock=103"
+        }
+      ]
+    }
+  }
+}
 ```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -317,7 +552,7 @@ Expected Response:
 
 ## Roadmap
 
-- [x] Add Changelog
+- [ ] Add Changelog
 - [x] Add back to top links
 - [ ] Add Additional Templates w/ Examples
 - [ ] Add "components" document to easily copy & paste sections of the readme
@@ -325,7 +560,7 @@ Expected Response:
   - [ ] Chinese
   - [ ] Spanish
 
-See the [open issues](https://github.com/othneildrew/Best-README-Template/issues) for a full list of proposed features (and known issues).
+See the [open issues](https://github.com/users/Sgalvin36/projects/9/views/1) for a full list of proposed features (and known issues).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -346,7 +581,7 @@ Don't forget to give the project a star! Thanks again!
 
 ### Top contributors:
 
-<!-- <a href="https://github.com/othneildrew/Best-README-Template/graphs/contributors">
+<!-- <a href="https://github.com/Sgalvin36/creative_cooking_api/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=othneildrew/Best-README-Template" alt="contrib.rocks image" />
 </a> -->
 
@@ -366,7 +601,8 @@ Distributed under the Unlicense License. See `LICENSE.txt` for more information.
 
 Shane Galvin - Sgalvin36@gmail.com
 
-Project Link: [https://github.com/Sgalvin36/creative_cooking_fe](https://github.com/Sgalvin36/creative_cooking_fe)
+Project Repo: [https://github.com/Sgalvin36/creative_cooking_api](https://github.com/Sgalvin36/creative_cooking_api)
+Associated Front End: [https://github.com/Sgalvin36/creative_cooking_fe](https://github.com/Sgalvin36/creative_cooking_fe)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 

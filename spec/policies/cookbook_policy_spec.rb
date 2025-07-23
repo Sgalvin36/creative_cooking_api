@@ -44,6 +44,13 @@ RSpec.describe CookbookPolicy, type: :policy do
 
       expect(policy_scope.to_a).to include(public_cookbook)
     end
+
+    it "allows user to see their own cookbooks without any other public cookbooks" do
+      policy_scope = CookbookPolicy::OwnedScope.new(regular_user, Cookbook.all).resolve
+
+      expect(policy_scope.to_a).to include(cookbook)
+      expect(policy_scope.to_a).not_to include(public_cookbook, other_cookbook)
+    end
   end
 
   describe '#show?' do
