@@ -506,7 +506,7 @@ Required variables:
 
 ```json
 {
-  "query": "query CookbookRecipes ($id: ID!) { cookbookRecipes (id: $id) { id cookbookName public user { id } recipes { id name image } } }",
+  "query": "query CookbookRecipes ($id: ID!) { cookbookRecipes (id: $id) { id cookbookName public canEdit user { id } recipes { id name image } } }",
   "variables": { "id": 1 },
   "operationName": "CookbookRecipes"
 }
@@ -521,6 +521,7 @@ Expected Response:
       "id": "1",
       "cookbookName": "Mediterranean Meals",
       "public": true,
+      "canEdit": true,
       "user": {
         "id": "301"
       },
