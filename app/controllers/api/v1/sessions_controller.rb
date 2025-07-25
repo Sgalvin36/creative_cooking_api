@@ -1,5 +1,5 @@
 class Api::V1::SessionsController < ApplicationController
-    skip_after_action :verify_authorized, only: [ :create, :destroy ]
+    skip_after_action :verify_authorized, only: [ :create, :destroy, :show ]
 
     def create
         identifier = params[:username] || params[:email]
@@ -31,6 +31,29 @@ class Api::V1::SessionsController < ApplicationController
         else
             sleep 0.5 # a way to slow down brute force attempts
             render json: { error: "Invalid credentials" }, status: :unauthorized
+        end
+    end
+
+    def show
+        token = cookies.signed[:jwt]
+        decoded = JsonWebToken.decode(token)
+        user = User.find_by(id: decoded&.dig("user_id"))
+
+        if user
+            render json: {
+                user: {
+                    id: user.id,
+                    first_name: user.first_name,
+                    last_name: user.last_name,
+                    username: user.user_name,
+                    slug: user.slug,
+                    primary_cookbook_id: user.cookbooks[0]&.id,
+                    cookbook_count: user.cookbooks.count
+                },
+                roles: user.roles
+            }, status: :ok
+        else
+            render json: { user: nil }, status: :unauthorized
         end
     end
 
