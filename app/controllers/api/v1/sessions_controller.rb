@@ -1,5 +1,5 @@
 class Api::V1::SessionsController < ApplicationController
-    skip_after_action :verify_authorized, only: [ :create ]
+    skip_after_action :verify_authorized, only: [ :create, :destroy ]
 
     def create
         identifier = params[:username] || params[:email]

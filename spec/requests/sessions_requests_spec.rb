@@ -107,11 +107,12 @@ describe "Sessions Controller", type: :request do
         let(:token) { JsonWebToken.encode(user_id: user.id) }
 
         before do
-            cookies.signed[:jwt] = token
+            headers = { "Cookie" => "jwt=#{token}" }
+            @headers = headers
         end
 
         it "successfully deletes the cookie and logs the user out" do
-            delete "/api/v1/logout", headers: { "Cookie" => "jwt=#{token}" }, credentials: "include"
+            delete "/api/v1/logout", headers: @headers, params: {}, as: :json
 
             expect(response).to have_http_status(:no_content)
 
@@ -124,7 +125,7 @@ describe "Sessions Controller", type: :request do
             delete "/api/v1/logout"
 
             expect(response).to have_http_status(:bad_request)
-            expect(JSON.parse(resonse.body)).to include("error" => "No session found")
+            expect(JSON.parse(response.body)).to include("error" => "No session found")
         end
     end
 end
