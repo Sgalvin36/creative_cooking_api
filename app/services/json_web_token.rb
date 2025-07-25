@@ -9,8 +9,10 @@ class JsonWebToken
     end
 
     def self.decode(token)
-        decoded = JWT.decode(token, SECRET_KEY, true, { algorithm: "HS256" }) rescue nil
-        raise JWT::DecodeError, "Invalid token" if decoded.nil?
+        decoded = JWT.decode(token, SECRET_KEY, true, { algorithm: "HS256" })
         HashWithIndifferentAccess.new(decoded.first)
+    rescue JWT::DecodeError => e
+        Rails.logger.warn("JWT Decode failed: #{e.message}")
+        nil
     end
 end

@@ -110,8 +110,7 @@ RSpec.describe "Sessions Controller", type: :request do
             let(:token) { JsonWebToken.encode(user_id: user.id) }
 
             before do
-                headers = { "Cookie" => "jwt=#{token}" }
-                @headers = headers
+                @headers = { "Cookie" => "jwt=#{token}" }
             end
 
             it "successfully deletes the cookie and logs the user out" do
@@ -138,12 +137,11 @@ RSpec.describe "Sessions Controller", type: :request do
             let(:token) { JsonWebToken.encode(user_id: user.id) }
 
             before do
-                headers = { "Cookie" => "jwt=#{token}" }
-                @headers = headers
+                @headers = { "Cookie" => "jwt=#{token}" }
             end
 
             it "returns current user and their roles" do
-                get "/api/v1/me", headers: @headers, params: {}, as: :json
+                get "/api/v1/me", headers: @headers, as: :json
 
                 expect(response).to have_http_status(:ok)
 
@@ -180,7 +178,7 @@ RSpec.describe "Sessions Controller", type: :request do
                 expect(response).to have_http_status(:unauthorized)
 
                 data = JSON.parse(response.body)
-                expect(parsed).to eq({ "user" => nil })
+                expect(data).to eq({ "user" => nil })
             end
         end
 
@@ -193,7 +191,7 @@ RSpec.describe "Sessions Controller", type: :request do
             end
 
             it "returns unauthorized with user: nil" do
-                get "/api/v1/me", headers: @headers, params: {}, as: :json
+                get "/api/v1/me", headers: @headers, as: :json
 
                 expect(response).to have_http_status(:unauthorized)
 

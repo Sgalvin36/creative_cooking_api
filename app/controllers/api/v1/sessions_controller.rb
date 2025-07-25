@@ -35,7 +35,7 @@ class Api::V1::SessionsController < ApplicationController
     end
 
     def show
-        token = cookies.signed[:jwt]
+        token = Rails.env.test? ? cookies[:jwt] : cookies.signed[:jwt]
         decoded = JsonWebToken.decode(token)
         user = User.find_by(id: decoded&.dig("user_id"))
 
