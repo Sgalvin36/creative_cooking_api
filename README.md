@@ -134,7 +134,7 @@ Get started by making sure that ruby is installed on your computer so that you'l
 
 ### Registering a user:
 
-Endpoint: `/graphql`
+Endpoint: `POST api/v1/graphql`
 <br><br>
 Required variables:
 
@@ -154,6 +154,11 @@ Required variables:
 }
 ```
 
+Expected Behavior:
+
+- Creates the user.
+- Returns the user information and roles in the JSON message.
+
 Expected response:
 
 ```json
@@ -166,16 +171,19 @@ Expected response:
         "lastName": "Erwin",
         "email": "SErwin@example.com"
       },
-      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...", // JWT or similar
       "errors": []
     }
   }
 }
 ```
 
+<br>
+
+---
+
 ### Signing in a user:
 
-Endpoint: `/login`
+Endpoint: `POST api/v1/login`
 <br><br>
 Required variables:
 
@@ -189,11 +197,16 @@ Required variables:
 
 \*\* Either email or username is required to access the login endpoint.
 <br><br>
+Expected Behavior:
+
+- Authenticates the user.
+- Sets an HttpOnly, secure, signed cookie named `jwt` containing a JWT token for session management.
+- Returns the user information and roles in the JSON message.
+
 Expected Response:
 
 ```json
 {
-  "token": "super long encrypted token",
   "user": {
     "id": 1,
     "first_name": "Maria",
@@ -217,11 +230,83 @@ Expected Response:
 }
 ```
 
+<br>
+
+---
+
+### Signing out a user:
+
+Endpoint: DELETE `api/v1/logout`
+<br><br>
+
+Expected Behavior:
+
+- Deletes the `jwt` cookie
+- Returns a success response
+
+Expected Response:
+
+- Status 204 No Content
+
+```json
+No body
+```
+
+<br>
+
+---
+
+### Fetching current logged-in user info:
+
+Endpoint: `GET api/v1/me`
+
+Expected Behavior:
+
+- Reads the `jwt` cookie, decodes the token.
+- Returns the current user's info if authenticated.
+- Returns 401 unauthorized if no valid cookie is present.
+
+Expected Response (200 Status):
+
+```json
+{
+  "user": {
+    "id": 1,
+    "first_name": "Maria",
+    "last_name": "Heaney",
+    "username": "test user",
+    "slug": "test-user",
+    "primary_cookbook_id": 123,
+    "cookbook_count": 5
+  },
+  "roles": [
+    {
+      "id": 1,
+      "name": "user",
+      "resource_type": null,
+      "resource_id": null
+    }
+  ]
+}
+```
+
+Expected Response (401 Status):
+
+```json
+{
+  "user": null
+}
+```
+
+<br>
+
+---
+
 ### Querying for recipes:
 
 #### **All Recipes**
 
-Endpoint: `/graphql`
+Endpoint: `POST api/v1/graphql`
 <br><br>
 Fetch all recipes optionally filtered by a search string, and support pagination with limit and offset. <br>
 Required variables:
@@ -263,11 +348,15 @@ Expected Response:
 }
 ```
 
+<br>
+
+---
+
 #### **Random Recipes**
 
 An endpoint to get a random assortment of recipes, default is 5 recipes but can take in a variable to take in more or less depending on the needs of the user.
 
-Endpoint: `/graphql`
+Endpoint: `POST api/v1/graphql`
 <br><br>
 Required variables:
 
@@ -311,11 +400,15 @@ Expected Response:
 }
 ```
 
+<br>
+
+---
+
 #### **Full Recipe Data**
 
 An endpoint to get all the data associated with a single recipe.
 
-Endpoint: `/graphql`
+Endpoint: `POST api/v1/graphql`
 <br><br>
 Required variables:
 
@@ -400,7 +493,7 @@ Expected Response:
 
 An endpoint to get all the public cookbooks available and will return a list dependent on if a guest, a user, or admin is making the request. The current user is what defines what is returned.
 
-Endpoint: `/graphql`
+Endpoint: `POST api/v1/graphql`
 <br><br>
 Required variables:
 
@@ -450,7 +543,7 @@ Expected Response:
 
 An endpoint to get all the cookbooks owned by the current user.
 
-Endpoint: `/graphql`
+Endpoint: `POST api/v1/graphql`
 <br><br>
 Required variables:
 
@@ -496,11 +589,15 @@ Expected Response:
 }
 ```
 
+<br>
+
+---
+
 #### **Cookbook Recipes**
 
 An endpoint to get all the recipes associated with a specific cookbook.
 
-Endpoint: `/graphql`
+Endpoint: `POST api/v1/graphql`
 <br><br>
 Required variables:
 
