@@ -18,10 +18,16 @@ module Mutations
           )
 
           if user.save
-            token = JsonWebToken.encode({ user_id: user.id, roles: user.roles })
+            token = JsonWebToken.encode({ user_id: user.id })
+            context[:controller].send(:cookies).signed[:jwt] = {
+              value: token,
+              httponly: true,
+              secure: Rails.env.production?,
+              same_site: :lax
+            }
+
             {
               user: user,
-              token: token,
               errors: []
             }
           else

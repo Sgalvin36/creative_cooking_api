@@ -9,7 +9,8 @@ class Api::V1::GraphqlController < ApplicationController
     query = params[:query]
     operation_name = params[:operationName] || nil
     context = {
-      current_user: current_user
+      current_user: current_user,
+      controller: self
     }
     result = CreativeCookingApiSchema.execute(query, variables: variables, context: context, operation_name: operation_name)
     render json: result
