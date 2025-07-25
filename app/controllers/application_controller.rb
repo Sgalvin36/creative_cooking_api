@@ -1,4 +1,5 @@
 class ApplicationController < ActionController::API
+    include ActionController::Cookies
     include Pundit::Authorization
     before_action :set_current_user
     after_action :verify_authorized

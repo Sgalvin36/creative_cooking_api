@@ -9,8 +9,14 @@ class Api::V1::SessionsController < ApplicationController
 
         if user&.authenticate(params[:password])
             token = JsonWebToken.encode({ user_id: user.id, roles: user.roles }) # Generate JWT
+
+            cookies.signed[:jwt] = {
+                value: token,
+                httponly: true,
+                secure: Rails.env.production?,
+                same_site: :lax
+            }
             render json: {
-                token: token,
                 user: {
                     id: user.id,
                     first_name: user.first_name,
@@ -25,6 +31,15 @@ class Api::V1::SessionsController < ApplicationController
         else
             sleep 0.5 # a way to slow down brute force attempts
             render json: { error: "Invalid credentials" }, status: :unauthorized
+        end
+    end
+
+    def destroy
+        if cookies[:jwt].present?
+            cookies.delete(:jwt, httponly: true, secure: Rails.env.production?, same_site: :lax)
+            head :no_content
+        else
+            render json: { error: "No session found" }, status: :bad_request
         end
     end
 end
