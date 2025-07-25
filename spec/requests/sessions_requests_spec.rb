@@ -104,7 +104,27 @@ describe "Sessions Controller", type: :request do
     end
 
     context "When user attempts to logout" do
+        let(:token) { JsonWebToken.encode(user_id: user.id) }
+
+        before do
+            cookies.signed[:jwt] = token
+        end
+
         it "successfully deletes the cookie and logs the user out" do
+            delete "/api/v1/logout", headers: { "Cookie" => "jwt=#{token}" }, credentials: "include"
+
+            expect(response).to have_http_status(:no_content)
+
+            set_cookie_header = response.headers["Set-Cookie"]
+            expect(set_cookie_header).to include("jwt=;")
+            expect(set_cookie_header).to include("expires=")
+        end
+
+        it "returns bad request if no cookie is present" do
+            delete "/api/v1/logout"
+
+            expect(response).to have_http_status(:bad_request)
+            expect(JSON.parse(resonse.body)).to include("error" => "No session found")
         end
     end
 end
