@@ -1,10 +1,26 @@
 # frozen_string_literal: true
 
 class Api::V1::GraphqlController < ApplicationController
-  include Pundit::Authorization
+  skip_after_action :verify_authorized
 
   def execute
-    authorize :graphql, :execute?
+    token = if Rails.env.test?
+      request.cookies["jwt"]
+    else
+      cookies.signed[:jwt]
+    end
+
+    current_user = if token
+      begin
+        decoded_token = JsonWebToken.decode(token)
+        User.find_by(id: decoded_token["user_id"])
+      rescue JWT::DecodeError, ActiveRecord::RecordNotFound
+        nil
+      end
+    else
+      nil
+    end
+
     variables = prepare_variables(params[:variables])
     query = params[:query]
     operation_name = params[:operationName] || nil
