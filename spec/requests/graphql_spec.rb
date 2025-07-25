@@ -9,7 +9,7 @@ RSpec.describe "GraphQL API", type: :request do
         if user
             token = JsonWebToken.encode(user_id: user.id)
             {
-                "Authorization" => "Bearer #{token}",
+                "Cookie" => "jwt=#{token}",
                 "Content-Type" => "application/json"
             }
         else
@@ -312,7 +312,6 @@ RSpec.describe "GraphQL API", type: :request do
                                 lastName
                                 email
                             }
-                            token
                             errors
                         }
                     }
@@ -340,7 +339,6 @@ RSpec.describe "GraphQL API", type: :request do
                 data = json["data"]["registerUser"]
 
                 expect(data["user"]["email"]).to eq("testUser@example.com")
-                expect(data["token"]).to be_present
                 expect(data["errors"]).to be_empty
             end
 
@@ -363,7 +361,6 @@ RSpec.describe "GraphQL API", type: :request do
                 data = json["data"]["registerUser"]
 
                 expect(data["user"]).to be_nil
-                expect(data["token"]).to be_nil
                 expect(data["errors"]).to_not be_empty
             end
         end
